@@ -35,5 +35,5 @@ In order to run the tests, you must first decrypt the secret. You'll need to hav
 ./sbt "decryptSecret core/src/test/resources/precog-ci-275718-e913743ebfeb.json.enc"
 ```
 ```
-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
+This has been revoked, no worries :D
 ```
