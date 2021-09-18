@@ -25,12 +25,19 @@ final case class GBQJob(
   etag: String,
   id: String,
   selfLink: String,
+  jobReference: GBQJobReference,
   status: GBQJobStatus
 )
 
+final case class GBQJobReference(
+  projectId: String,
+  jobId: String,
+  location: String
+)
+
 final case class GBQJobStatus(
-  errorResult: GBQErrorResult,
-  errors: List[GBQErrors],
+  errorResult: Option[GBQErrorResult],
+  errors: Option[List[GBQErrors]],
   state: String
 )
 
@@ -48,7 +55,7 @@ final case class GBQErrors(
   message: String
 )
 
-object GQBJob {
+object GBQJob {
   
   implicit val GBQJobDecodeJson: DecodeJson[GBQJob] =
     DecodeJson(c => for {
@@ -56,13 +63,21 @@ object GQBJob {
       etag <- (c --\ "age").as[String]
       id <- (c --\ "id").as[String]
       selfLink <- (c --\ "selfLink").as[String]
+      jobReference <- (c --\ "jobReference").as[GBQJobReference]
       status <- (c --\ "status").as[GBQJobStatus]
-    } yield GBQJob(kind, etag, id, selfLink, status))
+    } yield GBQJob(kind, etag, id, selfLink, jobReference, status))
+
+  implicit val GBQJobReferenceJson: DecodeJson[GBQJobReference] =
+    DecodeJson(c => for {
+      projectId <- (c --\ "projectId").as[String]
+      jobId <- (c --\ "jobId").as[String]
+      location <- (c --\ "location").as[String]
+    } yield GBQJobReference(projectId, jobId, location))
 
   implicit val GBQJobStatusDecodeJson: DecodeJson[GBQJobStatus] =
     DecodeJson(c => for {
-      errorResult <- (c --\ "errorResult").as[GBQErrorResult]
-      errors <- (c --\ "errors").as[List[GBQErrors]]
+      errorResult <- (c --\ "errorResult").as[Option[GBQErrorResult]]
+      errors <- (c --\ "errors").as[Option[List[GBQErrors]]]
       state <- (c --\ "state").as[String]
     } yield GBQJobStatus(errorResult, errors, state))
 
